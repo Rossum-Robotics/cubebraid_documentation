@@ -36,9 +36,11 @@ python serve_docs.py --host localhost --port 8000 --directory build\html
 
 SDK 源码和二进制文件请从官方仓库获取：
 
-<https://github.com/GJXS1980/cubebraid_sdk>
+<https://github.com/Rossum-Robotics/cubebraid_sdk>
 
-SDK 仓库包含 `include`、`lib`、`bin`、`src`、`scripts` 和 `doc` 目录。当前构建说明以 Windows、Visual Studio 2022、x64 和 C++14 为主；Linux 使用需要匹配的 `.so` 发布包。
+SDK 仓库包含 `include`、`lib`、`bin`、`src`、`scripts` 和 `doc` 目录。Windows 导入库位于 `lib/win`，DLL 位于 `bin`，Linux 动态库位于 `lib/linux`；`lib/linux_arm` 提供部分 ARM 模块。工程使用 C++14 和 OpenCV，Linux 构建还依赖 PCL、OpenMP、Protobuf 和 Snap7。完整安装说明见网站“2.1 安装与构建”。
+
+SDK 参考包括 AGV、Camera、DlSeg 实例分割、Kawasaki 运动学、Robot、PLC、Sensor、Json 和 Logger 九个模块。模型与配套依赖下载见 [官方 Releases](https://github.com/Rossum-Robotics/cubebraid_sdk/releases)；当前文档接口核对基于提交 `070f3db64968a7064a9104e258ba83b3255acb3c`。
 
 ## 目录说明
 

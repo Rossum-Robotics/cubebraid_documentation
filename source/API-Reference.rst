@@ -1,7 +1,7 @@
 第三章：SDK 参考
 ================
 
-本节按照公开头文件整理模块 API。函数签名、枚举值、结构体字段和单位来自 `CubeBraid SDK 仓库 <https://github.com/GJXS1980/cubebraid_sdk>`__ 的 ``include/CubeBraidSDK``；SDK 发布版本发生变化时，请以随版本发布的头文件为最终依据。
+本节按照公开头文件整理模块 API。函数签名、枚举值、结构体字段和单位来自 `CubeBraid SDK 仓库 <https://github.com/Rossum-Robotics/cubebraid_sdk>`__ 的 ``include/CubeBraidSDK``；SDK 发布版本发生变化时，请以随版本发布的头文件为最终依据。
 
 公共约定
 --------
@@ -16,6 +16,7 @@
 
    API/AGV
    API/Camera
+   API/DL
    API/Kawasaki
    API/Robot
    API/PLC
@@ -32,6 +33,7 @@
    └── CubeBraidSDK/
        ├── AGV_SDK/AGV_SDK.h
        ├── CameraSDK/CameraSDK.h
+       ├── DL_SDK/DlSegSdk.h
        ├── JsonSDK/JsonParameterSDK.h
        ├── KawasakiSDK/kawasaki_kinematics_sdk.h
        ├── LoggerSDK/LoggerSDK.h

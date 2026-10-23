@@ -1,11 +1,11 @@
-3.7 配置文件解析模块（JsonParameter SDK）
+3.8 配置文件解析模块（JsonParameter SDK）
 ===========================================
 
 头文件：``include/CubeBraidSDK/JsonSDK/JsonParameterSDK.h``
 
 Json SDK 是纯 C ABI 的参数读写库，接口以文件路径、索引和输出结构体为主，适合 C/C++、Python ``ctypes`` 和其他 FFI 调用。
 
-3.7.1 配置文件解析与参数映射
+3.8.1 配置文件解析与参数映射
 -----------------------------
 
 所有其他接口前调用：
@@ -80,8 +80,22 @@ Json SDK 是纯 C ABI 的参数读写库，接口以文件路径、索引和输�
      - 读取特殊面 ``diff_x`` 补偿。
    * - ``JsonParameterSDK_GetPalletizingPatternData(file_path, index, result)``
      - 读取垛型记录。
+   * - ``JsonParameterSDK_GetPalletizingPatternDataSize(file_path, count)``
+     - 读取文件中的垛型记录数量，``count`` 为输出指针。
 
 ``GetContinuationSurfaceLayer`` 的头文件声明顺序是 ``layer_num`` 后 ``surface_num``。仓库 C++ demo 中变量名与传参顺序容易造成误解，集成代码应按头文件原型传递指针。
+
+垛型缓存
+~~~~~~~~
+
+重复访问同一垛型文件时，可先加载到内存，再通过索引读取，避免每次查询都重新读取文件：
+
+* ``JsonParameterSDK_LoadPalletizingPatternData(file_path)``：一次性加载垛型文件；
+* ``JsonParameterSDK_GetPalletizingPatternDataCacheSize(count)``：获取缓存记录数；
+* ``JsonParameterSDK_GetPalletizingPatternDataFromCache(index, result)``：按索引读取缓存记录；
+* ``JsonParameterSDK_ClearPalletizingPatternDataCache()``：清空缓存。
+
+这些函数返回 ``JSONPARAM_SDK_SUCCESS`` 表示成功。输出数据由调用方提供存储；索引应在读取到的记录数量范围内。
 
 修改接口
 ~~~~~~~~
@@ -89,7 +103,10 @@ Json SDK 是纯 C ABI 的参数读写库，接口以文件路径、索引和输�
 * ``JsonParameterSDK_InitRobotData(file_path)``：初始化机器人状态文件；
 * ``JsonParameterSDK_SetJsonInt(file_path, field_name, value)``；
 * ``JsonParameterSDK_SetJsonFloat(file_path, field_name, value)``；
-* ``JsonParameterSDK_SetJsonString(file_path, field_name, value)``。
+* ``JsonParameterSDK_SetJsonString(file_path, field_name, value)``；
+* ``JsonParameterSDK_ModifyJsonField(file_path, field_name, new_value_json)``：传入 JSON 值文本，可写入数字、布尔值、字符串、数组或对象。
+
+``ModifyJsonField`` 的第三个参数使用 JSON 语法：``"123"`` 表示整数，``"true"`` 表示布尔值，``"[1,2,3]"`` 表示数组；写入字符串时，传入文本本身还须包含 JSON 双引号。
 
 这些接口会写入配置文件。生产系统应在写入前备份并校验字段范围，避免在机器人动作执行期间无条件重置状态。
 
@@ -184,14 +201,14 @@ JsonSDK 使用 JSON 和 TXT 文件为装卸柜任务提供运行参数。SDK 仓
      - ``test_demo.json``
      - ``GetStackStyleDiffX``
 
-3.7.2 机器人状态持久化与续码
+3.8.2 机器人状态持久化与续码
 -----------------------------
 
 ``RobotState`` 与 ``ContinuationConfig`` 记录工作模式、当前面、当前层、当前动作及完成数量。发生可恢复中断时，应用应先读取并校验这些状态，再决定是否继续任务；不要在动作执行中无条件调用 ``InitRobotData``。
 
 ``JsonParameterSDK_SetJsonInt``、``JsonParameterSDK_SetJsonFloat`` 和 ``JsonParameterSDK_SetJsonString`` 会直接写入配置文件。生产环境应先备份文件、校验字段范围并记录修改来源。
 
-3.7.3 C++ 调用例程（jsonsdk_demo.cpp）
+3.8.3 C++ 调用例程（jsonsdk_demo.cpp）
 ----------------------------------------
 
 .. code-block:: cpp
@@ -206,16 +223,48 @@ JsonSDK 使用 JSON 和 TXT 文件为装卸柜任务提供运行参数。SDK 仓
    JsonParameterSDK_GetSku("./data/json/sku_data.json", 0, &sku);
    JsonParameterSDK_Uninitialize();
 
-3.7.4 Python 调用例程（jsonsdk_demo.py）
+垛型缓存调用顺序
+~~~~~~~~~~~~~~~~
+
+下面的函数演示初始化、加载、遍历和清理。``file_path`` 为垛型 JSON 文件路径：
+
+.. code-block:: cpp
+
+   #include "CubeBraidSDK/JsonSDK/JsonParameterSDK.h"
+
+   int read_pattern_cache(const char* file_path)
+   {
+       int ret = JsonParameterSDK_Initialize();
+       if (ret != JSONPARAM_SDK_SUCCESS) return ret;
+       ret = JsonParameterSDK_LoadPalletizingPatternData(file_path);
+       int count = 0;
+       if (ret == JSONPARAM_SDK_SUCCESS)
+           ret = JsonParameterSDK_GetPalletizingPatternDataCacheSize(&count);
+       for (int i = 0; ret == JSONPARAM_SDK_SUCCESS && i < count; ++i) {
+           PalletizingPatternData record{};
+           ret = JsonParameterSDK_GetPalletizingPatternDataFromCache(i, &record);
+           // ret 成功时，可将 record 传入业务计算。
+       }
+       JsonParameterSDK_ClearPalletizingPatternDataCache();
+       JsonParameterSDK_Uninitialize();
+       return ret;
+   }
+
+3.8.4 Python 调用例程（jsonsdk_demo.py）
 ------------------------------------------
 
 .. code-block:: python
 
-   from json_parameter_sdk import JsonParameterSDK
+   from jsonparameter import JsonParameterSDK
 
    sdk = JsonParameterSDK()
-   calib = sdk.get_calibration(
-       "./data/json/Hand-eye_calibration_parameters.json", cam_mode=0)
-   sku = sdk.get_sku("./data/json/sku_data.json", sku_index=0)
-   print(f"标定 X/Y/Z: {calib.x}, {calib.y}, {calib.z}")
-   print(f"SKU 尺寸: {sku.length} x {sku.width} x {sku.height}")
+   try:
+       calib = sdk.get_calibration(
+           "./data/json/Hand-eye_calibration_parameters.json", cam_mode=0)
+       sku = sdk.get_sku("./data/json/sku_data.json", sku_index=0)
+       print(f"标定 X/Y/Z: {calib['x']}, {calib['y']}, {calib['z']}")
+       print(f"SKU 尺寸: {sku['length']} x {sku['width']} x {sku['height']}")
+   finally:
+       sdk.close()
+
+该片段在 ``scripts/JsonSDK`` 目录使用仓库的 ``jsonparameter.py``，查询结果为字典。当前 Python 类尚未封装上述缓存和通用字段修改接口；需要这些能力时，可按头文件声明绑定 C API，或直接使用 C++ 示例。

@@ -1,7 +1,7 @@
 CubeBraid 装卸柜机器人技术文档
 ==============================
 
-CubeBraid SDK 面向集装箱装卸柜机器人系统，提供 AGV、工业相机、机器人、PLC、倾角仪、运动学、参数管理和日志等基础能力。文档涵盖 CubeBraid SDK 接口，以及 RS080N 与华为 R2C 的 Python 插件和 C++ 适配工程。
+CubeBraid SDK 面向集装箱装卸柜机器人系统，提供 AGV、工业相机、箱体识别与实例分割、机器人、PLC、倾角仪、运动学、参数管理和日志等基础能力。文档涵盖 CubeBraid SDK 接口，以及 RS080N 与华为 R2C 的 Python 插件和 C++ 适配工程。
 
 .. toctree::
    :titlesonly:
@@ -33,6 +33,7 @@ CubeBraid SDK 面向集装箱装卸柜机器人系统，提供 AGV、工业相�
 
 * **AGV_SDK**：AGV 网络连接、登录、自动/手动运动和位姿读取。
 * **CameraSDK**：集装箱基准点、最后一面侧吸基准点和航向角偏差计算。
+* **DlSegSDK**：基于深度学习的箱体识别与实例分割，输出目标信息、可视化分割图和全局掩膜。
 * **RobotSDK**：机械臂连接、笛卡尔/关节运动和顶吸、侧吸目标位姿补偿。
 * **PLC_SDK**：PLC DB 块读写、吸盘/底托信号、装柜状态和取料参数同步。
 * **SensorSDK**：DXL360 倾角仪串口采集、自动重连和角度归零。
@@ -55,4 +56,4 @@ SDK 同时提供原生 C++ 接口和部分 C ABI 接口。C ABI 适合 Python ``
 当前页面对应 CubeBraid SDK 仓库中的接口快照。若头文件、动态库和本文档版本不一致，请优先以随 SDK 发布的 ``include`` 目录头文件为准，并记录 SDK commit 或发布版本。
 
 * `CubeBraid 官方网站 <https://www.rossum-robot.com/product/776.html>`__
-* `CubeBraid SDK GitHub 仓库 <https://github.com/GJXS1980/cubebraid_sdk>`__
+* `CubeBraid SDK GitHub 仓库 <https://github.com/Rossum-Robotics/cubebraid_sdk>`__

@@ -24,7 +24,7 @@
 
 * C++14 标准、编译器 ABI、目标架构和 Debug/Release 配置；
 * C ABI 的调用约定、结构体字段顺序和内存对齐；
-* 与头文件同一发布版本的 ``.lib``、``.dll`` 和第三方运行时依赖。
+* 与头文件同一版本的 ``.lib``、``.dll`` 或 ``.so``，以及配套第三方运行时依赖。
 
 ``PLCStatus`` 与 ``PickUpData`` 使用 ``#pragma pack(push, 1)``。Python ``ctypes`` 映射时也必须设置 ``_pack_ = 1``；更多跨语言约定见 :doc:`Python 对接规范 <Guides/Python-Integration>`。
 
@@ -34,6 +34,8 @@
 --------
 
 CubeBraid SDK 的公开模块按装卸柜机器人系统中的职责组织。应用可以按设备或算法能力选择相应的头文件和动态库。
+
+下表列出 Windows DLL 名称；对应导入库位于 ``lib/win``，Linux 动态库位于 ``lib/linux``，命名为 ``lib<模块名>.so``。
 
 .. list-table::
    :header-rows: 1
@@ -51,6 +53,10 @@ CubeBraid SDK 的公开模块按装卸柜机器人系统中的职责组织。应
      - 基准点、最后一面侧吸基准点和航向角算法。
      - ``CameraSDK.h``
      - ``CameraSDK.dll``
+   * - :doc:`DlSeg SDK <API/DL>`
+     - 箱体识别、实例分割、可视化图和全局掩膜。
+     - ``DlSegSdk.h``
+     - ``DlSegSDK.dll``
    * - :doc:`Kawasaki SDK <API/Kawasaki>`
      - RS080N 正逆运动学和奇异点规避。
      - ``kawasaki_kinematics_sdk.h``

@@ -71,7 +71,7 @@ SDK 当前头文件和 demo 覆盖以下任务：
 接口边界
 --------
 
-当前 SDK 发行目录提供 Windows ``.dll`` 和 ``.lib`` 文件，以及头文件和 demo。头文件包含跨平台导出宏，但如果要在 Linux 上部署，还需要对应的 ``.so`` 动态库和运行时依赖；仅有 Windows 二进制文件不能直接完成 Linux 构建。
+当前 SDK 提供 Windows ``bin`` 与 ``lib/win``，以及 Linux ``lib/linux`` 动态库。``lib/linux_arm`` 只包含部分模块。应用需匹配目标架构、编译器 ABI 和第三方运行时，具体准备步骤见 :doc:`安装与构建 <Get-Started/Installation>`。
 
 .. _container-workflow:
 

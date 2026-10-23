@@ -1,4 +1,4 @@
-3.3 机械臂运动学与轨迹规划模块（Kawasaki Kinematics SDK）
+3.4 机械臂运动学与轨迹规划模块（Kawasaki Kinematics SDK）
 ============================================================
 
 头文件：``include/CubeBraidSDK/KawasakiSDK/kawasaki_kinematics_sdk.h``
@@ -7,7 +7,7 @@
 
 本模块针对川崎 RS080N，提供正运动学、逆运动学、轨迹插值中的奇异点检查与规避，以及齐次矩阵分解。
 
-3.3.1 Kawasaki RS080N 机械臂 DH 参数与位姿变换
+3.4.1 Kawasaki RS080N 机械臂 DH 参数与位姿变换
 ------------------------------------------------
 
 .. code-block:: cpp
@@ -30,7 +30,7 @@
 
 ``BypassPoint`` 包含插值步骤 ``step_index``、调整后的 ``pose``（``[x, y, z, z1, y, z2]``）和触发原因 ``reason``。
 
-3.3.2 奇异点检测与安全避障规划
+3.4.2 奇异点检测与安全避障规划
 --------------------------------
 
 .. list-table::
@@ -71,7 +71,7 @@ C ABI
 
 ``q_deg`` 是 6 个元素的角度数组，``out_T16`` 是平铺的 16 元素 4×4 矩阵。``ik_calculator`` 的输出缓冲区建议预分配为 ``double[8][6]``，返回有效解数量（0 到 8）。Python demo 使用 NumPy 数组分配这两个缓冲区。
 
-3.3.3 C++ 调用例程（kawasaki_kinematics_sdk_demo.cpp）
+3.4.3 C++ 调用例程（kawasaki_kinematics_sdk_demo.cpp）
 --------------------------------------------------------
 
 .. code-block:: cpp
@@ -83,7 +83,7 @@ C ABI
    const auto solutions = solver.inverse_kinematics(T06);
    std::cout << "有效逆运动学解: " << solutions.size() << std::endl;
 
-3.3.4 Python 调用例程（kawasaki_kinematics_sdk_demo.py）
+3.4.4 Python 调用例程（kawasaki_kinematics_sdk_demo.py）
 -----------------------------------------------------------
 
 下例用于离线验证正、逆运动学；在向机器人控制器发送关节或位姿前，仍须完成关节限位、碰撞区和安全速度检查。
