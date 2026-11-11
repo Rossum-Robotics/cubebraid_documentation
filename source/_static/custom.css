@@ -49,3 +49,31 @@
 
     overflow: visible;
 }
+
+/* 保持架构图文字可读；窄屏可横向滚动，点击图片可单独放大。 */
+.r2c-flow-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+    margin: 1rem 0;
+    border: 1px solid #e2e8ee;
+    border-radius: 0.5rem;
+    background: #fff;
+}
+
+.r2c-flow-scroll .figure {
+    width: max-content;
+    max-width: none;
+    margin: 0;
+    padding: 0.5rem;
+}
+
+.r2c-flow-scroll img {
+    display: block;
+    max-width: none !important;
+    height: auto;
+}
+
+.r2c-flow-scroll .caption {
+    padding: 0 0.75rem 0.75rem;
+    text-align: left;
+}

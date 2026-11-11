@@ -1,7 +1,9 @@
-第六章：版本与变更
+第七章：版本与变更
 ==================
 
-本文档的接口版本、发布内容和变更信息以 `cubebraid_sdk GitHub 仓库 <https://github.com/GJXS1980/cubebraid_sdk>`__ 为准。升级或部署前，请对照该仓库的发布记录、提交记录及随 SDK 提供的头文件、动态库和示例。
+本文档的接口版本、发布内容和变更信息以 `cubebraid_sdk GitHub 仓库 <https://github.com/Rossum-Robotics/cubebraid_sdk>`__ 为准。升级或部署前，请对照该仓库的发布记录、提交记录及随 SDK 提供的头文件、动态库和示例。
+
+当前接口说明核对至提交 ``070f3db64968a7064a9104e258ba83b3255acb3c``。`官方 Releases <https://github.com/Rossum-Robotics/cubebraid_sdk/releases>`__ 中，v1.3 新增实例分割 SDK 与模型；v1.4 优化分割效率、扩展模型适配，并支持在检测时同步输出可视化图和掩膜。当前主分支还包含之后的配置参数及 Ubuntu 适配更新；发布 tag 与主分支快照应分别记录。
 
 兼容性记录
 ----------
@@ -11,7 +13,8 @@
 * Git commit 或发布 tag；
 * C++ 标准、编译器和目标架构；
 * ``include`` 头文件版本；
-* ``.lib``、``.dll`` 及第三方依赖版本；
+* ``.lib``、``.dll``、``.so`` 及第三方依赖版本；
+* 分割模型、类别名称文件、输入尺寸和推理配置；
 * 设备固件、PLC 程序和机器人程序版本；
 * 参数文件格式及字段变更。
 

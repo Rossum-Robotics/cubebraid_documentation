@@ -8,6 +8,10 @@
 
 ``ctypes.Structure`` 的字段类型、顺序和内存对齐必须与 C++ 结构体严格一致。对于使用 ``#pragma pack(1)`` 的结构体，Python 侧也必须设置 ``_pack_ = 1``。
 
+当前 ``PLCStatus`` 按 1 字节对齐，包含 11 个 ``int16_t`` 字段，总长 22 字节。应包含末尾的 ``plc_unload_state``；完整映射见 :doc:`PLC SDK <../API/PLC>`。
+
+DlSegSDK Python 接口使用 BGR 三通道 ``uint8`` NumPy 图像；``detect`` 返回目标数量、目标列表、可视化图和单通道掩膜。其数量返回值不等同于初始化接口的状态码，参见 :doc:`DlSeg SDK <../API/DL>`。
+
 句柄管理
 --------
 

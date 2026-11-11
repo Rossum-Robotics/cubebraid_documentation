@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1260 315" role="img" aria-labelledby="title desc">
+  <title id="title">RS080N C++ 适配工程闭环架构</title>
+  <desc id="desc">C++ 应用通过 RS080NAdapter、CubeBraidDriver 与 CubeBraid RobotSDK 向 RS080N 控制器下发关节和位姿指令；控制器的关节与 TCP 位姿反馈沿细实线反向返回应用。</desc>
+  <defs>
+    <marker id="command-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#287bb5"/>
+    </marker>
+    <marker id="feedback-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#087b70"/>
+    </marker>
+  </defs>
+  <style>
+    text { font-family: "Microsoft YaHei", "Noto Sans CJK SC", Arial, sans-serif; fill: #243342; }
+    .heading { font-size: 18px; font-weight: 700; }
+    .module { font-size: 16px; font-weight: 700; }
+    .detail { font-size: 13px; }
+    .edge-label { font-size: 13px; font-weight: 600; }
+    .legend { font-size: 14px; }
+    .box { fill: #eef6fb; stroke: #3c82b1; stroke-width: 1.7; }
+    .hardware { fill: #e8f5f3; stroke: #188678; stroke-width: 1.7; }
+    .command { fill: none; stroke: #287bb5; stroke-width: 3; stroke-linecap: round; marker-end: url(#command-arrow); }
+    .feedback { fill: none; stroke: #087b70; stroke-width: 1.5; stroke-linecap: round; marker-end: url(#feedback-arrow); }
+  </style>
+
+  <text class="heading" x="25" y="37">C++ 适配工程：指令下发与状态回传</text>
+
+  <rect class="box" x="25" y="89" width="190" height="95" rx="12"/>
+  <text class="module" x="120" y="130" text-anchor="middle">C++ 应用</text>
+  <text class="detail" x="120" y="155" text-anchor="middle">示例程序</text>
+
+  <rect class="box" x="270" y="89" width="220" height="95" rx="12"/>
+  <text class="module" x="380" y="130" text-anchor="middle">RS080NAdapter</text>
+  <text class="detail" x="380" y="155" text-anchor="middle">目标检查 / 到位判定</text>
+
+  <rect class="box" x="550" y="89" width="190" height="95" rx="12"/>
+  <text class="module" x="645" y="130" text-anchor="middle">CubeBraidDriver</text>
+  <text class="detail" x="645" y="155" text-anchor="middle">设备通信</text>
+
+  <rect class="box" x="800" y="89" width="190" height="95" rx="12"/>
+  <text class="module" x="895" y="130" text-anchor="middle">CubeBraid</text>
+  <text class="detail" x="895" y="155" text-anchor="middle">RobotSDK</text>
+
+  <rect class="hardware" x="1050" y="89" width="185" height="95" rx="12"/>
+  <text class="module" x="1142" y="130" text-anchor="middle">RS080N</text>
+  <text class="detail" x="1142" y="155" text-anchor="middle">机器人控制器</text>
+
+  <path class="command" d="M 216 119 H 269"/>
+  <path class="command" d="M 491 119 H 549"/>
+  <path class="command" d="M 741 119 H 799"/>
+  <path class="command" d="M 991 119 H 1049"/>
+  <text class="edge-label" x="242" y="76" text-anchor="middle">动作目标</text>
+  <text class="edge-label" x="520" y="76" text-anchor="middle">关节 / 位姿</text>
+  <text class="edge-label" x="770" y="76" text-anchor="middle">控制命令</text>
+  <text class="edge-label" x="1020" y="76" text-anchor="middle">运动指令</text>
+
+  <path class="feedback" d="M 269 154 H 216"/>
+  <path class="feedback" d="M 549 154 H 491"/>
+  <path class="feedback" d="M 799 154 H 741"/>
+  <path class="feedback" d="M 1049 154 H 991"/>
+  <text class="edge-label" x="242" y="216" text-anchor="middle">观测结果</text>
+  <text class="edge-label" x="520" y="216" text-anchor="middle">反馈快照</text>
+  <text class="edge-label" x="770" y="216" text-anchor="middle">状态读取</text>
+  <text class="edge-label" x="1020" y="216" text-anchor="middle">关节 / TCP 位姿</text>
+
+  <path class="command" d="M 28 278 H 76"/>
+  <text class="legend" x="88" y="283">实线：真实硬件指令下发</text>
+  <path class="feedback" d="M 490 278 H 442"/>
+  <text class="legend" x="503" y="283">反向细箭头：状态回传</text>
+</svg>

@@ -1,11 +1,11 @@
-第七章：联系与支持
+第八章：联系与支持
 ==================
 
 技术支持入口
 ------------
 
 * `CubeBraid 官方网站 <https://www.rossum-robot.com/product/776.html>`__
-* `CubeBraid SDK 源码仓库 <https://github.com/GJXS1980/cubebraid_sdk>`__
+* `CubeBraid SDK 源码仓库 <https://github.com/Rossum-Robotics/cubebraid_sdk>`__
 
 提交问题时请提供：
 

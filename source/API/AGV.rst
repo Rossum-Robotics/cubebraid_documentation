@@ -35,6 +35,8 @@
      - 偏航角或航向角。
      - rad
 
+目标导航使用 ``GoalPose``，包含 ``double x``、``double y`` 和 ``double yaw``；C ABI 对应 ``C_GoalPose``，字段顺序相同。目标坐标以 AGV 地图坐标系及控制器协议为准，不能直接套用相对位移接口的毫米单位。
+
 通信线程
 ~~~~~~~~
 
@@ -112,6 +114,12 @@
    * - ``goBack(dist_mm, timeout_ms)``
      - ``bool``
      - 自动模式下阻塞等待位移完成，默认超时 30000 ms。
+   * - ``navToPose(pose, timeout_ms = 30000)``
+     - ``bool``
+     - 导航到 ``GoalPose`` 指定的目标点，任务完成返回 true，超时或中断返回 false。
+   * - ``navToStation(stations_num, timeout_ms = 30000)``
+     - ``bool``
+     - 导航到已配置的站点编号，任务完成返回 true，超时或中断返回 false。
    * - ``manualCtlVelSet(vx, vy, w)``
      - ``bool``
      - 手动模式发送一次速度指令；``vx/vy`` 为 mm/s，``w`` 按头文件为 0.001 rad/s。
@@ -136,6 +144,11 @@
 .. code-block:: cpp
 
    typedef void* AGV_Handle;
+   typedef struct {
+       double x;
+       double y;
+       double yaw;
+   } C_GoalPose;
    AGV_Handle AGV_Create();
    void AGV_Destroy(AGV_Handle handle);
    bool AGV_Connect(AGV_Handle handle, const char* ip, int port);
@@ -146,6 +159,8 @@
    bool AGV_SwitchControlMode(AGV_Handle handle, C_ControlMode mode);
    bool AGV_GoForward(AGV_Handle handle, double dist_mm, int timeout_ms);
    bool AGV_GoBack(AGV_Handle handle, double dist_mm, int timeout_ms);
+   bool AGV_NavToPose(AGV_Handle handle, C_GoalPose pose, int timeout_ms);
+   bool AGV_ToStation(AGV_Handle handle, int stations_num, int timeout_ms);
    bool AGV_ManualCtlVelSet(AGV_Handle handle, float vx, float vy, float w);
    bool AGV_QuerySystemState(AGV_Handle handle);
    bool AGV_SendHeartBeatsMsg(AGV_Handle handle);
@@ -198,3 +213,21 @@
 
    if __name__ == "__main__":
        main()
+
+目标点与站点导航
+~~~~~~~~~~~~~~~~
+
+在连接、登录并进入自动模式后，C++ 可调用 ``navToPose(GoalPose{x, y, yaw}, timeout_ms)`` 或 ``navToStation(stations_num, timeout_ms)``。Python 封装提供 ``C_GoalPose``、``navToPose`` 和 ``toStation``，名称大小写与仓库保持一致：
+
+.. code-block:: python
+
+   from agv_sdk import C_GoalPose
+
+   def navigate_to_target(agv, x, y, yaw, timeout_ms=30000):
+       goal = C_GoalPose(x=x, y=y, yaw=yaw)
+       return agv.navToPose(goal, timeout_ms=timeout_ms)
+
+   def navigate_to_station(agv, station_number, timeout_ms=30000):
+       return agv.toStation(station_number, timeout_ms=timeout_ms)
+
+这两个函数接收已连接、登录且处于自动模式的 ``AGVClient``。站点编号须与 AGV 已配置的地图一致。

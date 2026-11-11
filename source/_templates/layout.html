@@ -1,12 +1,5 @@
 {% extends "!layout.html" %}
 
-{# 重写 extrahead 插入绝对路径的 Favicon，避免 DNSPod URL 转发导致的相对路径拦截问题 #}
-{% block extrahead %}
-    {{ super() }}
-    <link rel="shortcut icon" href="https://docs.xyzrpy.com/_static/favicon.ico" type="image/x-icon" />
-    <link rel="icon" href="https://docs.xyzrpy.com/_static/favicon.ico" type="image/x-icon" />
-{% endblock %}
-
 {% block sidebartitle %}
     {%- set _root_doc = root_doc|default(master_doc) %}
     <a href="{{ pathto(_root_doc) }}" class="icon icon-home">

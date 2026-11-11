@@ -21,6 +21,9 @@ C++ demo
    * - ``CameraSDK_demo``
      - ``src/CubeBraidSDK/CameraSDK/CameraSDK_demo.cpp``
      - 基准点、最后一面、航向角算法。
+   * - ``dlseg_sdk_demo``
+     - ``src/CubeBraidSDK/DL_SDK/dlseg_sdk_demo.cpp``
+     - ONNX 实例分割、目标信息、可视化图和全局掩膜。
    * - ``jsonsdk_demo``
      - ``src/CubeBraidSDK/JsonSDK/jsonsdk_demo.cpp``
      - 配置读取、状态初始化、垛型数据。
@@ -47,12 +50,16 @@ Python 封装
 
 * ``AGV_SDK/agv_sdk.py``：``AGVClient``，支持上下文管理器和手动持续运动后自动归零；
 * ``CameraSDK/camera_sdk.py``：Camera3D C ABI 的 ctypes 封装；
+* ``DL_SDK/dlseg_sdk.py``：``DlSegSDK``，提供模型初始化、识别、分割与掩膜保存；
+* ``DL_SDK/dlseg_sdk_img_demo.py``、``dlseg_sdk_cam_demo.py``：图片分割与本机视频设备实时分割；
 * ``JsonSDK/jsonparameter.py``：配置结构体和 JSON/TXT 查询接口；
 * ``RobotSDK/robot_sdk.py``：机器人运动与目标位姿算法封装；
 * ``SensorSDK/inclinometer.py``：倾角仪创建、启动、读取、归零和关闭；
 * ``PLC_SDK/plc_sdk_demo.py``、``LoggerSDK/logger_sdk_demo.py`` 和运动学 demo：联调用例。
 
-这些脚本通过相对路径寻找 ``bin`` 中的 DLL，实际使用时应从脚本所在目录或配置过的绝对路径启动。Python ``ctypes`` 的 ``argtypes`` 和 ``restype`` 必须与对应头文件一致。
+各封装的库查找路径不同。DlSegSDK 默认从 ``build/SDK_Demos`` 加载 DLL/SO；其他模块按脚本分别核对。脚本中的数据路径还与当前工作目录有关。Python ``ctypes`` 的 ``argtypes`` 和 ``restype`` 必须与对应接口一致。
+
+DlSegSDK 的模型文件、输出格式和短示例见 :doc:`深度学习箱体识别与实例分割 <API/DL>`。``DL_SDK/pt_to_onnx/pt_to_onnx.py`` 提供 Ultralytics 模型导出工具。
 
 参数样例
 --------

@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1460 510" role="img" aria-labelledby="title desc">
+  <title id="title">RS080N R2C Python 插件闭环架构</title>
+  <desc id="desc">上方实线从 R2C Agent 经适配器、校验层、CubeBraidDriver 和 RobotSDK 到控制器下发指令；下方细实线反向回传关节和位姿状态。MockDriver 位于真实驱动下方，通过虚线构成离线模拟分支，驱动按配置单选。</desc>
+  <defs>
+    <marker id="command-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#287bb5"/>
+    </marker>
+    <marker id="feedback-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#087b70"/>
+    </marker>
+    <marker id="mock-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#7951a8"/>
+    </marker>
+  </defs>
+  <style>
+    text { font-family: "Microsoft YaHei", "Noto Sans CJK SC", Arial, sans-serif; fill: #243342; }
+    .heading { font-size: 18px; font-weight: 700; }
+    .module { font-size: 16px; font-weight: 700; }
+    .detail { font-size: 13px; }
+    .edge-label { font-size: 13px; font-weight: 600; }
+    .legend { font-size: 14px; }
+    .box { fill: #eef6fb; stroke: #3c82b1; stroke-width: 1.7; }
+    .hardware { fill: #e8f5f3; stroke: #188678; stroke-width: 1.7; }
+    .mock-box { fill: #f5f0fa; stroke: #7951a8; stroke-width: 1.7; }
+    .command { fill: none; stroke: #287bb5; stroke-width: 3; stroke-linecap: round; marker-end: url(#command-arrow); }
+    .feedback { fill: none; stroke: #087b70; stroke-width: 1.5; stroke-linecap: round; marker-end: url(#feedback-arrow); }
+    .mock { fill: none; stroke: #7951a8; stroke-width: 2.4; stroke-dasharray: 8 6; stroke-linecap: round; marker-end: url(#mock-arrow); }
+    .mock-feedback { fill: none; stroke: #7951a8; stroke-width: 1.4; stroke-dasharray: 5 5; stroke-linecap: round; marker-end: url(#mock-arrow); }
+  </style>
+
+  <text class="heading" x="22" y="39">在线闭环控制</text>
+  <text class="detail" x="240" y="39">RS080NAdapter 按 driver.mode 单选驱动；上层 R2C 接口保持一致</text>
+
+  <rect class="box" x="22" y="116" width="190" height="100" rx="12"/>
+  <text class="module" x="117" y="158" text-anchor="middle">R2C Agent</text>
+  <text class="detail" x="117" y="183" text-anchor="middle">华为 Python SDK</text>
+
+  <rect class="box" x="250" y="116" width="190" height="100" rx="12"/>
+  <text class="module" x="345" y="153" text-anchor="middle">RS080N-R2C</text>
+  <text class="module" x="345" y="176" text-anchor="middle">适配器（Adapter）</text>
+  <text class="detail" x="345" y="199" text-anchor="middle">RS080NR2CAdapter</text>
+
+  <rect class="box" x="478" y="116" width="215" height="100" rx="12"/>
+  <text class="module" x="585" y="150" text-anchor="middle">RS080NAdapter</text>
+  <text class="detail" x="585" y="175" text-anchor="middle">动作解析 / 状态校验</text>
+  <text class="detail" x="585" y="197" text-anchor="middle">按 driver.mode 选择驱动</text>
+
+  <rect class="box" x="745" y="116" width="170" height="100" rx="12"/>
+  <text class="module" x="830" y="158" text-anchor="middle">CubeBraidDriver</text>
+  <text class="detail" x="830" y="183" text-anchor="middle">在线驱动</text>
+
+  <rect class="box" x="965" y="116" width="205" height="100" rx="12"/>
+  <text class="module" x="1067" y="158" text-anchor="middle">CubeBraid</text>
+  <text class="detail" x="1067" y="183" text-anchor="middle">Python RobotSDK</text>
+
+  <rect class="hardware" x="1220" y="116" width="215" height="100" rx="12"/>
+  <text class="module" x="1327" y="158" text-anchor="middle">RS080N</text>
+  <text class="detail" x="1327" y="183" text-anchor="middle">机器人控制器</text>
+
+  <path class="command" d="M 213 150 H 249"/>
+  <path class="command" d="M 441 150 H 477"/>
+  <path class="command" d="M 694 150 H 744"/>
+  <path class="command" d="M 916 150 H 964"/>
+  <path class="command" d="M 1171 150 H 1219"/>
+  <text class="edge-label" x="231" y="103" text-anchor="middle">动作</text>
+  <text class="edge-label" x="459" y="103" text-anchor="middle">目标 rad</text>
+  <text class="edge-label" x="719" y="103" text-anchor="middle">目标 deg</text>
+  <text class="edge-label" x="940" y="103" text-anchor="middle">控制命令</text>
+  <text class="edge-label" x="1195" y="103" text-anchor="middle">运动指令</text>
+
+  <path class="feedback" d="M 249 187 H 213"/>
+  <path class="feedback" d="M 477 187 H 441"/>
+  <path class="feedback" d="M 744 187 H 694"/>
+  <path class="feedback" d="M 964 187 H 916"/>
+  <path class="feedback" d="M 1219 187 H 1171"/>
+  <text class="edge-label" x="231" y="246" text-anchor="middle">机器人状态</text>
+  <text class="edge-label" x="459" y="246" text-anchor="middle">关节位置 rad</text>
+  <text class="edge-label" x="719" y="246" text-anchor="middle">反馈快照</text>
+  <text class="edge-label" x="940" y="246" text-anchor="middle">状态读取</text>
+  <text class="edge-label" x="1195" y="246" text-anchor="middle">关节 / 位姿</text>
+
+  <rect class="mock-box" x="745" y="342" width="170" height="90" rx="12"/>
+  <text class="module" x="830" y="380" text-anchor="middle">MockDriver</text>
+  <text class="detail" x="830" y="405" text-anchor="middle">离线模拟驱动</text>
+  <path class="mock" d="M 565 217 V 305 H 830 V 341"/>
+  <text class="edge-label" x="705" y="294" text-anchor="middle">mode=mock · 模拟动作</text>
+  <path class="mock-feedback" d="M 744 398 H 630 V 217"/>
+  <text class="edge-label" x="676" y="453" text-anchor="middle">模拟关节状态回传</text>
+
+  <path class="command" d="M 26 484 H 75"/>
+  <text class="legend" x="88" y="489">在线真实硬件：指令下发</text>
+  <path class="feedback" d="M 396 484 H 347"/>
+  <text class="legend" x="408" y="489">反向细箭头：状态回传</text>
+  <path class="mock" d="M 745 484 H 794"/>
+  <text class="legend" x="807" y="489">虚线：离线仿真 / 模拟链路</text>
+</svg>

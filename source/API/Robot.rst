@@ -1,4 +1,4 @@
-3.4 机器人抓取控制与位姿补偿模块（Robot SDK）
+3.5 机器人抓取控制与位姿补偿模块（Robot SDK）
 ================================================
 
 头文件：``include/CubeBraidSDK/RobotSDK/RobotSDK.h``
@@ -7,7 +7,7 @@
 
 RobotSDK 负责机器人控制器连接、状态读取、笛卡尔/关节运动和装卸柜抓取目标位姿计算。它使用 Eigen 进行姿态和运动学相关计算。
 
-3.4.1 机械臂通讯与精度模式
+3.5.1 机械臂通讯与精度模式
 --------------------------
 
 * ``Pose``：``x/y/z`` 为毫米，``rx/ry/rz`` 为度；
@@ -60,7 +60,7 @@ RobotSDK 负责机器人控制器连接、状态读取、笛卡尔/关节运动�
 * ``GetJoint4Angle()``：单独读取 J4 角度；
 * ``isConnected()``：读取连接状态。
 
-3.4.2 斜面补偿与装载点位姿计算
+3.5.2 斜面补偿与装载点位姿计算
 --------------------------------
 
 .. code-block:: cpp
@@ -89,7 +89,7 @@ C ABI
 
    虽然这些函数位于 ``extern "C"`` 区域，补偿函数的参数仍包含 ``robot_sdk::Pose`` 和 ``robot_sdk::BoxDimension`` 等 C++ 类型。使用 Python ``ctypes`` 或其他 FFI 前，必须以实际导出 ABI 验证结构体布局；不能仅凭函数名判断它是纯 C 兼容接口。
 
-3.4.3 C++ 调用例程（RobotSDK_demo.cpp）
+3.5.3 C++ 调用例程（RobotSDK_demo.cpp）
 -----------------------------------------
 
 .. code-block:: cpp
@@ -108,7 +108,7 @@ C ABI
    const auto target = robot_sdk::RobotController::Top_suction_angle(
        centroid, box, 3, 1, 75.0f, offset, true, 0, 0.0);
 
-3.4.4 Python 调用例程（robot_sdk_demo.py）
+3.5.4 Python 调用例程（robot_sdk_demo.py）
 -------------------------------------------
 
 以下示例只计算目标位姿，不连接机器人，可用于先核对基准点、SKU 尺寸、抓取模式和单位：
