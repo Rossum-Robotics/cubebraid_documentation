@@ -39,8 +39,6 @@
 
 目标导航使用 ``GoalPose``，包含 ``double x``、``double y`` 和 ``double yaw``；C ABI 对应 ``C_GoalPose``，字段顺序相同。目标坐标以 AGV 地图坐标系及控制器协议为准，不能直接套用相对位移接口的毫米单位。
 
-目标导航使用 ``GoalPose``，包含 ``double x``、``double y`` 和 ``double yaw``；C ABI 对应 ``C_GoalPose``，字段顺序相同。目标坐标以 AGV 地图坐标系及控制器协议为准，不能直接套用相对位移接口的毫米单位。
-
 通信线程
 ~~~~~~~~
 
