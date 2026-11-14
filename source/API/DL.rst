@@ -3,6 +3,8 @@
 
 头文件：``include/CubeBraidSDK/DL_SDK/DlSegSdk.h``
 
+参数依据：`官方头文件（固定版本 925af00） <https://github.com/Rossum-Robotics/cubebraid_sdk/blob/925af00e023aacab5a33c5eaf4bd731ad7192342/include/CubeBraidSDK/DL_SDK/DlSegSdk.h>`__。
+
 命名空间：``dlseg_sdk``；Python 封装：``scripts/DL_SDK/dlseg_sdk.py``。
 
 DlSegSDK 加载 ONNX 实例分割模型，对输入图像中的箱体进行识别，输出目标类别、置信度、边框和掩膜。一次推理同时返回带识别框、标签及掩膜的可视化图，以及供后续图像处理使用的全局纯净掩膜。识别类别由所加载的模型决定。
@@ -62,38 +64,52 @@ Python 封装默认从 SDK 根目录的 ``build/SDK_Demos`` 加载动态库。�
 
 .. list-table::
    :header-rows: 1
-   :widths: 28 22 50
+   :widths: 22 24 10 44
 
-   * - 字段
-     - 默认值
-     - 用途
+   * - 参数
+     - 类型
+     - 方向
+     - 说明
    * - ``model_path``
-     - 空字符串
-     - ONNX 模型文件路径。
+     - ``std::string``
+     - 配置
+     - ONNX 模型路径；默认空字符串。
    * - ``class_names_path``
-     - 空字符串
-     - 类别名称文本文件路径，每行一个名称。
-   * - ``use_cuda`` / ``cuda_id``
-     - ``true`` / ``0``
-     - 是否使用 CUDA，以及 GPU 设备编号。
+     - ``std::string``
+     - 配置
+     - 类别名称文件路径，每行一个名称；默认空字符串。
+   * - ``use_cuda``
+     - ``bool``
+     - 配置
+     - 是否使用 CUDA，默认 ``true``。
+   * - ``cuda_id``
+     - ``int``
+     - 配置
+     - CUDA 设备编号，默认 ``0``。
    * - ``warm_up``
-     - ``true``
-     - 初始化时执行模型预热。
-   * - ``net_width`` / ``net_height``
-     - ``640`` / ``640``
-     - 模型输入宽高，单位为像素。
+     - ``bool``
+     - 配置
+     - 是否预热模型，默认 ``true``。
+   * - ``net_width / net_height``
+     - ``int``
+     - 配置
+     - 模型输入宽／高，单位为像素，各默认 ``640``。
    * - ``class_threshold``
-     - ``0.25``
-     - 类别置信度阈值。
+     - ``float``
+     - 配置
+     - 类别置信度阈值，默认 ``0.25f``。
    * - ``nms_threshold``
-     - ``0.45``
-     - 非极大值抑制阈值。
+     - ``float``
+     - 配置
+     - 非极大值抑制阈值，默认 ``0.45f``。
    * - ``mask_threshold``
-     - ``0.5``
-     - 掩膜二值化阈值。
+     - ``float``
+     - 配置
+     - 掩膜阈值，默认 ``0.5f``。
    * - ``batch_size``
-     - ``1``
-     - 推理批大小。
+     - ``int``
+     - 配置
+     - 批大小，默认 ``1``。
 
 仓库图片示例使用 ``class_threshold=0.94``、``mask_threshold=0.25``，摄像头示例使用 ``class_threshold=0.25``、``mask_threshold=0.25``；这些是示例配置，不是接口默认值。
 
@@ -136,16 +152,154 @@ C++ 使用 ``getLastError()``、``getLastStatus()`` 和 ``statusToString(status)
 C++ 接口
 ~~~~~~~~
 
+initialize：加载模型
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 .. code-block:: cpp
 
    StatusCode initialize(const SdkConfig& config);
+
+.. list-table::
+   :header-rows: 1
+   :widths: 22 24 10 44
+
+   * - 参数
+     - 类型
+     - 方向
+     - 说明
+   * - ``config``
+     - ``const SdkConfig&``
+     - 输入
+     - 模型、设备、输入尺寸、阈值和批大小配置，字段见 3.3.2。
+
+返回值：``StatusCode``，成功为 ``SUCCESS``。
+
+detect：检测与分割
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: cpp
+
    StatusCode detect(cv::Mat& img, std::vector<OutputParams>& output,
                      cv::Mat& canvas, cv::Mat& mask_img);
+
+.. list-table::
+   :header-rows: 1
+   :widths: 22 24 10 44
+
+   * - 参数
+     - 类型
+     - 方向
+     - 说明
+   * - ``img``
+     - ``cv::Mat&``
+     - 输入
+     - 待识别原图；Python 封装对应 BGR 三通道 ``uint8`` 图像。
+   * - ``output``
+     - ``std::vector<OutputParams>&``
+     - 输出
+     - 检测与实例分割目标列表，由调用方提供容器。
+   * - ``canvas``
+     - ``cv::Mat&``
+     - 输出
+     - 带识别框、Mask 和类别标签的可视化图。
+   * - ``mask_img``
+     - ``cv::Mat&``
+     - 输出
+     - 全图纯净掩膜，头文件描述为单通道灰度或黑底目标白色／ID 色图像。
+
+返回值：``StatusCode``；检测列表、可视化图和掩膜通过引用参数输出。
+
+OutputParams：单个目标结果
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. list-table::
+   :header-rows: 1
+   :widths: 22 24 10 44
+
+   * - 参数
+     - 类型
+     - 方向
+     - 说明
+   * - ``id``
+     - ``int``
+     - 输出字段
+     - 类别 ID。
+   * - ``confidence``
+     - ``float``
+     - 输出字段
+     - 目标置信度。
+   * - ``box``
+     - ``cv::Rect``
+     - 输出字段
+     - 轴对齐矩形，坐标与宽高为图像像素。
+   * - ``rotatedBox``
+     - ``cv::RotatedRect``
+     - 输出字段
+     - 倾斜旋转矩形；角度和尺寸使用 OpenCV 类型约定。
+   * - ``boxMask``
+     - ``cv::Mat``
+     - 输出字段
+     - 目标矩形框内的局部掩膜，区别于全图 ``mask_img``。
+
+SaveMask：保存目标掩膜
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: cpp
+
    StatusCode SaveMask(cv::Mat& img, const std::vector<OutputParams>& result,
                        const std::string& save_path,
                        const std::string& file_name);
 
-``OutputParams`` 包含类别 ``id``、置信度 ``confidence``、轴对齐矩形 ``box``、旋转矩形 ``rotatedBox`` 和框内掩膜 ``boxMask``。矩形坐标与尺寸使用图像像素单位。``SaveMask`` 按识别结果提取并保存掩膜图片；保存 ``detect`` 返回的全局掩膜则可直接使用 ``cv::imwrite``。
+.. list-table::
+   :header-rows: 1
+   :widths: 22 24 10 44
+
+   * - 参数
+     - 类型
+     - 方向
+     - 说明
+   * - ``img``
+     - ``cv::Mat&``
+     - 输入
+     - 与识别结果对应的原图。
+   * - ``result``
+     - ``const std::vector<OutputParams>&``
+     - 输入
+     - ``detect`` 输出的目标列表。
+   * - ``save_path``
+     - ``const std::string&``
+     - 输入
+     - 保存目录，例如 ``./data/img/``。
+   * - ``file_name``
+     - ``const std::string&``
+     - 输入
+     - 保存文件名，例如 ``mask_result.png``。
+
+返回值：``StatusCode``，``SUCCESS`` 表示成功。保存 ``detect`` 返回的全图掩膜也可直接使用 ``cv::imwrite``。
+
+statusToString：状态文本
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: cpp
+
+   std::string statusToString(StatusCode status);
+
+.. list-table::
+   :header-rows: 1
+   :widths: 22 24 10 44
+
+   * - 参数
+     - 类型
+     - 方向
+     - 说明
+   * - ``status``
+     - ``StatusCode``
+     - 输入
+     - 需要转换的执行状态码。
+
+返回值：``std::string`` 可读状态描述。
+
+``std::string getLastError() const`` 和 ``StatusCode getLastStatus() const noexcept`` 均无参数，分别返回最近错误信息与状态码。
 
 Python 接口
 ~~~~~~~~~~~
