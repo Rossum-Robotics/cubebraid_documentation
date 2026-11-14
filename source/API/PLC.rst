@@ -3,6 +3,8 @@
 
 头文件：``include/CubeBraidSDK/PLC_SDK/PLC_SDK.h``
 
+参数依据：`官方头文件（固定版本 925af00） <https://github.com/Rossum-Robotics/cubebraid_sdk/blob/925af00e023aacab5a33c5eaf4bd731ad7192342/include/CubeBraidSDK/PLC_SDK/PLC_SDK.h>`__。
+
 命名空间：``plc_sdk``
 
 PLC_SDK 基于 Snap7 客户端连接 PLC，提供 DB 块安全读写、装卸柜离散信号、取料参数发送和实时状态缓存。Windows 依赖 ``bin/snap7.dll``，Linux 依赖 ``lib/linux/libsnap7.so``。
@@ -24,6 +26,40 @@ PLC_SDK 基于 Snap7 客户端连接 PLC，提供 DB 块安全读写、装卸柜
 * ``plc_unload_state``：PLC 卸货允许请求状态。
 
 ``PickUpData`` 同样按 1 字节对齐，包含 ``fetch_mode``、``mode_switch``、SKU 长宽高、``sku_num`` 和单箱重量 ``sku_weight``。尺寸单位为 mm，重量单位为 kg。
+
+PickUpData：取料字段
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. list-table::
+   :header-rows: 1
+   :widths: 22 24 10 44
+
+   * - 参数
+     - 类型
+     - 方向
+     - 说明
+   * - ``fetch_mode``
+     - ``int``
+     - 输入字段
+     - 取料模式：``1/2`` 为转动，``3/4`` 为不转动；这是 PLC 结构体自身的约定。
+   * - ``mode_switch``
+     - ``int``
+     - 输入字段
+     - 模式切换参数；该结构体注释未给出枚举取值。
+   * - ``sku_l / sku_w / sku_h``
+     - ``double``
+     - 输入字段
+     - SKU 长／宽／高，单位 mm。
+   * - ``sku_num``
+     - ``int``
+     - 输入字段
+     - 单次取料数量。
+   * - ``sku_weight``
+     - ``double``
+     - 输入字段
+     - 单个 SKU 重量，单位 kg。
+
+``PickUpData`` 与 ``PLCStatus`` 均按 1 字节对齐。``PLCStatus`` 上述十一个字段类型均为 ``int16_t``，用于读取状态；两个结构体均未在声明中设置字段默认值。
 
 3.6.2 DB 块读写与离散信号控制
 -------------------------------
@@ -57,6 +93,159 @@ PLC_SDK 基于 Snap7 客户端连接 PLC，提供 DB 块安全读写、装卸柜
 * 状态：``getStatus``；
 * 业务同步：``controlTableAngle``、``updateBoxState``、``updateInclinometerAngle``、``updateTotalBoxState``、``sendPickUpData``；
 * 初始化：``triggerPLCInit``、``triggerTableInit``。
+
+connect：PLC 连接
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: cpp
+
+   bool connect(const std::string& ip, int rack = 0, int slot = 1);
+
+.. list-table::
+   :header-rows: 1
+   :widths: 22 24 10 44
+
+   * - 参数
+     - 类型
+     - 方向
+     - 说明
+   * - ``ip``
+     - ``const std::string&``
+     - 输入
+     - PLC IP 地址。
+   * - ``rack``
+     - ``int``
+     - 输入
+     - PLC 机架号，C++ 默认 ``0``。
+   * - ``slot``
+     - ``int``
+     - 输入
+     - PLC 插槽号，C++ 默认 ``1``。
+
+返回值：``bool``，表示连接是否成功。
+
+safeDBWrite / safeDBRead：DB 缓冲区
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: cpp
+
+   bool safeDBWrite(int dbNumber, int start, int size, void* buffer);
+   bool safeDBRead(int dbNumber, int start, int size, void* buffer);
+
+.. list-table::
+   :header-rows: 1
+   :widths: 22 24 10 44
+
+   * - 参数
+     - 类型
+     - 方向
+     - 说明
+   * - ``dbNumber``
+     - ``int``
+     - 输入
+     - DB 块编号。
+   * - ``start``
+     - ``int``
+     - 输入
+     - DB 读取或写入的起始地址。
+   * - ``size``
+     - ``int``
+     - 输入
+     - 读／写字节数，调用方缓冲区至少应提供相应容量。
+   * - ``buffer``
+     - ``void*``
+     - 输入／输出
+     - 写接口读取调用方的源数据；读接口将结果写入调用方缓冲区。
+
+返回值：``bool``，表示本次 DB 操作是否成功。
+
+离散信号：发送与复位
+~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: cpp
+
+   void setOpenSuctionCup(bool enable);
+   void setSuctionCupPickingOK(bool enable);
+   void setFixtureRollOut(bool enable);
+   void setRetrievingCompletionSide(bool enable);
+   void setFixtureInitialization(bool enable);
+   void setCloseSuctionCup(bool enable);
+   void setInclinometerErrorSignal(bool enable);
+   void setUnloadOKSignal(bool enable);
+
+.. list-table::
+   :header-rows: 1
+   :widths: 22 24 10 44
+
+   * - 参数
+     - 类型
+     - 方向
+     - 说明
+   * - ``enable``
+     - ``bool``
+     - 输入
+     - 是否置位对应信号：``true`` 发送／置位，``false`` 关闭／复位；上述接口均无默认实参。
+
+返回值：``void``。各函数依次对应吸盘打开、吸取 OK、底托伸出、侧吸取料完成、底托缩回、吸盘关闭、倾角仪异常、卸柜放置 OK 信号。
+
+业务数据：摆台、进度、倾角和取料
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: cpp
+
+   void controlTableAngle(int angle_mode);
+   void updateBoxState(int surface_num, int lay_num, int box_num);
+   void updateInclinometerAngle(float angle_value);
+   void updateTotalBoxState(int totalbox_num, int remain_num);
+   bool sendPickUpData(const PickUpData& data);
+
+.. list-table::
+   :header-rows: 1
+   :widths: 22 24 10 44
+
+   * - 参数
+     - 类型
+     - 方向
+     - 说明
+   * - ``angle_mode``
+     - ``int``
+     - 输入
+     - 摆台角度序号；不是直接以度数表示的角度。
+   * - ``surface_num / lay_num``
+     - ``int``
+     - 输入
+     - 当前装柜面数和层数。
+   * - ``box_num``
+     - ``int``
+     - 输入
+     - 单次装柜的箱子数量。
+   * - ``angle_value``
+     - ``float``
+     - 输入
+     - 当前倾角仪角度；此函数注释未单独标注角度单位。
+   * - ``totalbox_num / remain_num``
+     - ``int``
+     - 输入
+     - 总装柜箱数和剩余箱数。
+   * - ``data``
+     - ``const PickUpData&``
+     - 输入
+     - 取料参数，字段类型和含义见 3.6.1。
+
+返回值：前四个函数为 ``void``；``sendPickUpData`` 的声明返回 ``bool``，不是 ``void``。
+
+无参数接口
+~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: cpp
+
+   void disconnect();
+   bool isConnected() const;
+   PLCStatus getStatus();
+   bool triggerPLCInit();
+   bool triggerTableInit();
+
+``disconnect`` 断开连接，无返回值；``isConnected`` 返回连接状态；``getStatus`` 按值返回当前缓存状态。两个初始化触发接口分别返回 PLC／摆台是否初始化完成。
 
 C ABI
 ~~~~~
@@ -93,6 +282,64 @@ C 接口使用 ``PLC_HANDLE``：
                                   int remain_num);
    bool plc_trigger_plc_init(PLC_HANDLE handle);
    bool plc_trigger_table_init(PLC_HANDLE handle);
+
+C ABI 公共参数与差异
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. list-table::
+   :header-rows: 1
+   :widths: 22 24 10 44
+
+   * - 参数
+     - 类型
+     - 方向
+     - 说明
+   * - ``handle``
+     - ``PLC_HANDLE``
+     - 输入
+     - ``plc_create`` 返回的非空句柄，最后由 ``plc_destroy`` 释放；除创建外，所有导出函数都接收该参数。
+   * - ``ip``
+     - ``const char*``
+     - 输入
+     - PLC 地址字符串。
+   * - ``rack / slot``
+     - ``int``
+     - 输入
+     - 机架／插槽号；``plc_connect`` 没有 C++ 默认实参，需显式传入。
+   * - ``dbNumber / start / size``
+     - ``int``
+     - 输入
+     - 与 C++ DB 接口相同；``size`` 为字节数。
+   * - ``buffer``
+     - ``void*``
+     - 输入／输出
+     - ``plc_safe_db_write`` 为输入数据；``plc_safe_db_read`` 为输出缓冲区。
+   * - ``enable``
+     - ``bool``
+     - 输入
+     - 所有 ``plc_set_*`` 信号接口的置位／复位参数。
+   * - ``status_out``
+     - ``PLCStatus*``
+     - 输出
+     - 调用方提供的 22 字节状态对象，``plc_get_status`` 写入当前缓存状态。
+   * - ``angle_mode / surface_num / lay_num / box_num``
+     - ``int``
+     - 输入
+     - 分别为摆台角度序号、面、层和单次箱数，业务含义与 C++ 接口相同。
+   * - ``angle_value``
+     - ``float``
+     - 输入
+     - 当前倾角仪角度，传给 ``plc_update_inclinometer_angle``。
+   * - ``totalbox_num / remain_num``
+     - ``int``
+     - 输入
+     - 总箱数和剩余箱数，传给 ``plc_update_total_box_state``。
+   * - ``data``
+     - ``const PickUpData*``
+     - 输入
+     - 取料结构体的地址；对应 C++ 的引用参数。
+
+``plc_create`` 无参数，成功返回非空句柄、失败返回 NULL。``plc_get_status`` 及连接、连接状态、DB 操作、发送取料数据和初始化触发接口返回 ``bool``；销毁、断开、离散信号及其他数据更新接口返回 ``void``。``plc_send_pickup_data`` 以实际声明的 ``bool`` 返回类型为准。
 
 3.6.3 C++ 调用例程（plc_sdk_demo.cpp）
 ---------------------------------------

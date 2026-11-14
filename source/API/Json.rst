@@ -3,6 +3,8 @@
 
 头文件：``include/CubeBraidSDK/JsonSDK/JsonParameterSDK.h``
 
+参数依据：`官方头文件（固定版本 925af00） <https://github.com/Rossum-Robotics/cubebraid_sdk/blob/925af00e023aacab5a33c5eaf4bd731ad7192342/include/CubeBraidSDK/JsonSDK/JsonParameterSDK.h>`__。
+
 Json SDK 是纯 C ABI 的参数读写库，接口以文件路径、索引和输出结构体为主，适合 C/C++、Python ``ctypes`` 和其他 FFI 调用。
 
 3.8.1 配置文件解析与参数映射
@@ -48,6 +50,154 @@ Json SDK 是纯 C ABI 的参数读写库，接口以文件路径、索引和输�
    * - ``PalletizingPatternData``
      - 面/层、夹具/抓取模式、吸取方式、偏移量、SKU/集装箱尺寸、数量
      - 垛型与装柜计算输入。
+
+标定、SKU 和位姿字段
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. list-table::
+   :header-rows: 1
+   :widths: 22 24 10 44
+
+   * - 参数
+     - 类型
+     - 方向
+     - 说明
+   * - ``CalibrationPose.x/y/z``
+     - ``float``
+     - 输出字段
+     - 手眼标定位置；本头文件未标注平移单位。
+   * - ``CalibrationPose.qw/qx/qy/qz``
+     - ``float``
+     - 输出字段
+     - 手眼标定四元数。
+   * - ``SkuData.length/width/height``
+     - ``double``
+     - 输出字段
+     - 产品长／宽／高，单位 mm。
+   * - ``SkuData.weight``
+     - ``double``
+     - 输出字段
+     - 产品重量，单位 kg。
+   * - ``RobotPose.x/y/z``
+     - ``float``
+     - 输出字段
+     - 机器人位置，单位由配置文件约定，本头文件未标注。
+   * - ``RobotPose.rx/ry/rz``
+     - ``float``
+     - 输出字段
+     - 机器人姿态分量，角度约定需与配置文件匹配。
+
+状态与续码字段
+~~~~~~~~~~~~~~~~~~~~
+
+.. list-table::
+   :header-rows: 1
+   :widths: 22 24 10 44
+
+   * - 参数
+     - 类型
+     - 方向
+     - 说明
+   * - ``ContinuationConfig.surface_num / layer_num``
+     - ``int``
+     - 输出字段
+     - 面数／层数。
+   * - ``ContinuationConfig.work_mode_num / agv_mode_num``
+     - ``int``
+     - 输出字段
+     - 工作模式／AGV 模式，头文件未给出完整取值表。
+   * - ``ContinuationConfig.action_num``
+     - ``int``
+     - 输出字段
+     - 动作数量。
+   * - ``ContinuationConfig.stack_type``
+     - ``int``
+     - 输出字段
+     - 预留码垛类型。
+   * - ``RobotState.work_mode_state``
+     - ``int``
+     - 输出字段
+     - 工作模式。
+   * - ``RobotState.surface_state / layer_state / action_state``
+     - ``int``
+     - 输出字段
+     - 当前面／层／动作状态。
+   * - ``RobotState.total_num``
+     - ``int``
+     - 输出字段
+     - 总数量。
+   * - ``RobotState.x/y/z / rx/ry/rz``
+     - ``float``
+     - 输出字段
+     - 当前位置与姿态；本头文件未标注这些字段的单位。
+
+上述结构体没有字段默认初始化声明，接收前应由调用方初始化存储。
+
+PalletizingPatternData：垛型字段
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. list-table::
+   :header-rows: 1
+   :widths: 22 24 10 44
+
+   * - 参数
+     - 类型
+     - 方向
+     - 说明
+   * - ``number_of_surface / number_of_layers``
+     - ``int``
+     - 输出字段
+     - 面数／层数，声明初始值均为 ``0``。
+   * - ``fixture_mode``
+     - ``int``
+     - 输出字段
+     - 预留夹具模式，声明初始值 ``0``。
+   * - ``fetch_mode``
+     - ``int``
+     - 输出字段
+     - 夹具取料模式，声明初始值 ``0``；本字段注释未列出完整模式取值。
+   * - ``mode_switch``
+     - ``int``
+     - 输出字段
+     - 顶吸 ``1``／侧吸 ``2``，声明初始值 ``0``。
+   * - ``r_offset``
+     - ``bool``
+     - 输出字段
+     - 是否为每层最左侧垛型，初始值 ``false``。
+   * - ``stack_type``
+     - ``int``
+     - 输出字段
+     - 预留垛型类型，初始值 ``0``。
+   * - ``product_type``
+     - ``int``
+     - 输出字段
+     - 正常码法 ``1``；特殊码法（第一面最上层右侧两个横纸箱）``2``；初始值 ``0``。
+   * - ``special_stack_type``
+     - ``int``
+     - 输出字段
+     - 正常码法 ``0``／一横多竖特殊码法 ``1``；初始值 ``0``。
+   * - ``x / y / z``
+     - ``float``
+     - 输出字段
+     - 垛型三个方向的偏移，单位 mm，初始值均为 ``0.0``。
+   * - ``sku_l / sku_w / sku_h``
+     - ``float``
+     - 输出字段
+     - 产品长／宽／高，单位 mm，初始值均为 ``0.0``。
+   * - ``sku_weight``
+     - ``float``
+     - 输出字段
+     - 产品重量，单位 kg，初始值 ``0.0``。
+   * - ``container_l / container_w / container_h``
+     - ``float``
+     - 输出字段
+     - 集装箱长／宽／高，单位 mm，初始值均为 ``0.0``。
+   * - ``sku_num``
+     - ``int``
+     - 输出字段
+     - 单次动作抓取数量，单位为箱，初始值 ``0``。
+
+声明初始值表示默认构造状态，不表示该值一定是业务有效配置。
 
 查询接口
 ~~~~~~~~
@@ -109,6 +259,192 @@ Json SDK 是纯 C ABI 的参数读写库，接口以文件路径、索引和输�
 ``ModifyJsonField`` 的第三个参数使用 JSON 语法：``"123"`` 表示整数，``"true"`` 表示布尔值，``"[1,2,3]"`` 表示数组；写入字符串时，传入文本本身还须包含 JSON 双引号。
 
 这些接口会写入配置文件。生产系统应在写入前备份并校验字段范围，避免在机器人动作执行期间无条件重置状态。
+
+初始化与错误信息
+~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: cpp
+
+   int JsonParameterSDK_Initialize();
+   void JsonParameterSDK_Uninitialize();
+   int JsonParameterSDK_GetLastError(char* buffer, int buffer_size);
+
+.. list-table::
+   :header-rows: 1
+   :widths: 22 24 10 44
+
+   * - 参数
+     - 类型
+     - 方向
+     - 说明
+   * - ``buffer``
+     - ``char*``
+     - 输出
+     - 调用方提供的错误文本缓冲区。
+   * - ``buffer_size``
+     - ``int``
+     - 输入
+     - 缓冲区容量；容量不足可返回 ``JSONPARAM_SDK_ERROR_BUFFER_SMALL``。
+
+返回值：初始化返回模块错误码，释放接口返回 ``void``；错误信息接口返回成功、参数无效或缓冲区过小等状态码。初始化和释放无参数。
+
+读取接口：完整声明
+~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: cpp
+
+   int JsonParameterSDK_CheckJsonFile(const char* file_path);
+   int JsonParameterSDK_GetCalibration(const char* file_path, int cam_mode,
+                                       CalibrationPose* result);
+   int JsonParameterSDK_GetSku(const char* file_path, int sku_index, SkuData* result);
+   int JsonParameterSDK_GetAgvAngle(const char* file_path, int angle_index, float* angle);
+   int JsonParameterSDK_GetRobotPose(const char* file_path, int param_mode,
+                                     RobotPose* result);
+   int JsonParameterSDK_GetInclinometerPort(const char* file_path, int port_index,
+                                            char* port);
+   int JsonParameterSDK_GetContinuationSurfaceLayer(
+       const char* file_path, int index, int* layer_num, int* surface_num);
+   int JsonParameterSDK_GetRobotState(const char* file_path, RobotState* result);
+   int JsonParameterSDK_GetContinuationConfig(const char* file_path,
+                                              ContinuationConfig* result);
+   int JsonParameterSDK_GetStackStyleDiffX(const char* file_path, int index,
+                                          float* diff_x);
+   int JsonParameterSDK_GetPalletizingPatternData(const char* file_path, int index,
+                                                 PalletizingPatternData* result);
+   int JsonParameterSDK_GetPalletizingPatternDataSize(const char* file_path,
+                                                     int* count);
+
+.. list-table::
+   :header-rows: 1
+   :widths: 22 24 10 44
+
+   * - 参数
+     - 类型
+     - 方向
+     - 说明
+   * - ``file_path``
+     - ``const char*``
+     - 输入
+     - 待读取 JSON 文件路径；``GetContinuationConfig`` 使用 TXT 配置路径。
+   * - ``cam_mode``
+     - ``int``
+     - 输入
+     - 手眼标定的相机模式。
+   * - ``sku_index / angle_index / port_index / index``
+     - ``int``
+     - 输入
+     - 对应 SKU、航向角、端口、续码或垛型记录的选择索引；各文件的有效范围由实际内容决定。
+   * - ``param_mode``
+     - ``int``
+     - 输入
+     - ``GetRobotPose`` 的位姿参数模式，头文件未给出取值枚举。
+   * - ``result``
+     - ``CalibrationPose* / SkuData* / RobotPose* / RobotState* / ContinuationConfig* / PalletizingPatternData*``
+     - 输出
+     - 调用方提供的对应结构体地址；具体类型见各函数签名。
+   * - ``angle``
+     - ``float*``
+     - 输出
+     - AGV 航向角结果，本函数声明未标注单位。
+   * - ``port``
+     - ``char*``
+     - 输出
+     - 倾角仪串口名称的字符缓冲区；接口没有长度参数，头文件未给出最大容量约定。
+   * - ``layer_num / surface_num``
+     - ``int*``
+     - 输出
+     - 续码层数／面数，签名顺序是先层后面。
+   * - ``diff_x``
+     - ``float*``
+     - 输出
+     - 特殊面 X 方向补偿值，单位未在该声明中标注。
+   * - ``count``
+     - ``int*``
+     - 输出
+     - 垛型记录数量；不是 JSON 文件字节大小。
+
+上述读取接口均返回 ``int`` 模块状态码，``JSONPARAM_SDK_SUCCESS=0`` 表示成功。结果通过输出参数传回，状态码本身不是记录数量、角度或位姿值。所有 C API 均没有默认实参。
+
+垛型缓存：参数与生命周期
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: cpp
+
+   int JsonParameterSDK_LoadPalletizingPatternData(const char* file_path);
+   int JsonParameterSDK_GetPalletizingPatternDataFromCache(
+       int index, PalletizingPatternData* result);
+   int JsonParameterSDK_GetPalletizingPatternDataCacheSize(int* count);
+   int JsonParameterSDK_ClearPalletizingPatternDataCache();
+
+.. list-table::
+   :header-rows: 1
+   :widths: 22 24 10 44
+
+   * - 参数
+     - 类型
+     - 方向
+     - 说明
+   * - ``file_path``
+     - ``const char*``
+     - 输入
+     - 一次性加载到缓存的垛型 JSON 路径。
+   * - ``index``
+     - ``int``
+     - 输入
+     - 缓存内记录索引；与缓存记录数量配套检查。
+   * - ``result``
+     - ``PalletizingPatternData*``
+     - 输出
+     - 调用方提供的垛型结构体地址。
+   * - ``count``
+     - ``int*``
+     - 输出
+     - 缓存记录数量。
+
+四个函数均返回模块状态码；清理缓存接口无参数。``GetPalletizingPatternDataFromCache`` 从内存查询，因而不再接收文件路径。
+
+写入接口：字段和值
+~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: cpp
+
+   int JsonParameterSDK_InitRobotData(const char* file_path);
+   int JsonParameterSDK_SetJsonInt(const char* file_path, const char* field_name,
+                                   int value);
+   int JsonParameterSDK_SetJsonFloat(const char* file_path, const char* field_name,
+                                     float value);
+   int JsonParameterSDK_SetJsonString(const char* file_path, const char* field_name,
+                                      const char* value);
+   int JsonParameterSDK_ModifyJsonField(const char* file_path,
+                                        const char* field_name,
+                                        const char* new_value_json);
+
+.. list-table::
+   :header-rows: 1
+   :widths: 22 24 10 44
+
+   * - 参数
+     - 类型
+     - 方向
+     - 说明
+   * - ``file_path``
+     - ``const char*``
+     - 输入
+     - 目标 JSON 文件路径；初始化机器人状态时也使用该参数。
+   * - ``field_name``
+     - ``const char*``
+     - 输入
+     - 要修改的字段名；头文件没有约定嵌套字段路径语法。
+   * - ``value``
+     - ``int / float / const char*``
+     - 输入
+     - 按三个 SetJson 接口分别传入整数、浮点数或普通字符串。
+   * - ``new_value_json``
+     - ``const char*``
+     - 输入
+     - JSON 值文本，可表示数字、布尔值、字符串、数组或对象；字符串值需要保留 JSON 双引号。
+
+返回值：``int`` 模块状态码，成功为 ``0``。``InitRobotData`` 仅接收文件路径；其余函数还需要字段名与新值。
 
 错误码
 ~~~~~~
